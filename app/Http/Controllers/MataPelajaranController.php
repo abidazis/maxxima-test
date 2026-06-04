@@ -19,13 +19,16 @@ class MataPelajaranController extends Controller
     }
 
     // UPDATE: Edit mata pelajaran
-    public function destroy($id) {
-        MataPelajaran::findOrFail($id)->delete();
+    public function update(Request $request, $id)
+    {
+        $request->validate(['nama_matpel' => 'required|string|max:50']);
+        $matpel = MataPelajaran::findOrFail($id);
+        $matpel->update(['nama_matpel' => $request->nama_matpel]);
         return redirect()->back();
     }
 
         // DELETE: Hapus mata pelajaran
-    public function delete($id) {
+    public function destroy($id) {
         MataPelajaran::findOrFail($id)->delete();
         return redirect()->back();
     }

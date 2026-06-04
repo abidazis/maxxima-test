@@ -19,6 +19,14 @@ class UjianController extends Controller
         return redirect()->back();
     }
 
+    public function update(Request $request, $id)
+    {
+        $request->validate(['nama_ujian' => 'required|string|max:50', 'id_matpel' => 'required', 'tanggal' => 'required|date']);
+        $ujian = Ujian::findOrFail($id);
+        $ujian->update($request->all());
+        return redirect()->back();
+    }
+    
     public function destroy($id) {
         Ujian::findOrFail($id)->delete();
         return redirect()->back();

@@ -57,11 +57,18 @@ class PesertaController extends Controller
             ->orderBy('ujians.tanggal', 'desc')
             ->get();
 
-        // 3b. Menampilkan NAMA_UJIAN, NAMA_MATPEL, TANGGAL, JUMLAH_PESERTA
+        // 3b. Menampilkan NAMA_UJIAN, NAMA_MATPEL, TANGGAL, JUMLAH_PESERTA + JUMLAH LULUS
         $rekapUjian = DB::table('ujians')
             ->join('mata_pelajarans', 'ujians.id_matpel', '=', 'mata_pelajarans.id_matpel')
             ->leftJoin('pesertas', 'ujians.id_ujian', '=', 'pesertas.id_ujian')
-            ->select('ujians.nama_ujian', 'mata_pelajarans.nama_matpel', 'ujians.tanggal', DB::raw('count(pesertas.nis) as jumlah_peserta'))
+            ->select(
+                'ujians.nama_ujian', 
+                'mata_pelajarans.nama_matpel', 
+                'ujians.tanggal', 
+                DB::raw('count(pesertas.nis) as jumlah_peserta'),
+                // PASTIKAN BARIS INI ADA DAN SUDAH DI-SAVE:
+                DB::raw('COALESCE(SUM(CASE WHEN pesertas.status_lulus = 1 THEN 1 ELSE 0 END), 0) as jumlah_lulus')
+            )
             ->groupBy('ujians.id_ujian', 'ujians.nama_ujian', 'mata_pelajarans.nama_matpel', 'ujians.tanggal')
             ->get();
 

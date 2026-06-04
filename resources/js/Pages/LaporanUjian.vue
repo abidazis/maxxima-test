@@ -46,6 +46,8 @@
                                     <th class="py-2 px-2 text-left">Mata Pelajaran</th>
                                     <th class="py-2 px-2 text-left">Tanggal</th>
                                     <th class="py-2 px-2 text-center">Total Peserta</th>
+                                    <th class="py-2 px-2 text-center">Total Lulus</th>
+                                    <th class="py-2 px-2 text-center">persentase lulus</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -55,6 +57,12 @@
                                     <td class="py-2 px-2">{{ item.tanggal }}</td>
                                     <td class="py-2 px-2 text-center">
                                         <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded-full font-bold">{{ item.jumlah_peserta }}</span>
+                                    </td>
+                                    <td class="py-2 px-2 text-center">
+                                        <span class="bg-green-100 text-green-800 px-2 py-1 rounded-full font-bold">{{ item.jumlah_lulus }}</span>
+                                    </td>
+                                    <td class="py-2 px-2 text-center font-bold" :class="hitungPersentase(item.jumlah_lulus, item.jumlah_peserta) >= 50 ? 'text-green-600' : 'text-red-600'">
+                                        {{ hitungPersentase(item.jumlah_lulus, item.jumlah_peserta) }}%
                                     </td>
                                 </tr>
                                 <tr v-if="rekapUjian.length === 0">
@@ -103,4 +111,12 @@ defineProps({
     totalSiswaLulus: Number,
     siswaGagal: Array
 });
+
+const hitungPersentase = (lulus, total) => {
+    // Pengaman: Jika total 0 atau lulus tidak terdefinisi, langsung kembalikan 0
+    if (!total || total == 0) return 0; 
+    if (!lulus) return 0; 
+    
+    return Math.round((lulus / total) * 100);
+};
 </script>

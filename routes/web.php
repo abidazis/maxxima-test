@@ -4,13 +4,11 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
-
-// Panggil semua Controller buatan kita
+use App\Http\Controllers\AlgorithmController;
 use App\Http\Controllers\SiswaController;
 use App\Http\Controllers\MataPelajaranController;
 use App\Http\Controllers\UjianController;
 use App\Http\Controllers\PesertaController;
-use App\Http\Controllers\AlgorithmController;
 
 // ==========================================
 // 1. ROUTE PUBLIK (Bisa diakses tanpa Login)
@@ -52,14 +50,18 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('peserta', PesertaController::class);
 });
 
-
-// ==========================================
 // 3. ROUTE PROFILE BAWAAN BREEZE
-// ==========================================
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
+
+// ROUTE KHUSUS ALGORITMA (Aman dari CRUD)
+Route::get('/algoritma', [AlgorithmController::class, 'index'])->name('algoritma.index');
+Route::post('/algoritma/fibonacci', [AlgorithmController::class, 'prosesFibonacci'])->name('algoritma.fibo');
+Route::post('/algoritma/sort', [AlgorithmController::class, 'prosesSort'])->name('algoritma.sort');
+Route::post('/algoritma/minmax', [AlgorithmController::class, 'prosesMinMax'])->name('algoritma.minmax');
+Route::post('/algoritma/umur', [AlgorithmController::class, 'prosesUmur'])->name('algoritma.umur');
 
 require __DIR__.'/auth.php';

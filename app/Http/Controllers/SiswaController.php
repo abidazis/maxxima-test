@@ -8,9 +8,7 @@ use Inertia\Inertia;
 
 class SiswaController extends Controller
 {
-    // ==========================================
     // READ (Menampilkan semua data siswa)
-    // ==========================================
     public function index()
     {
         $siswa = Siswa::all(); // Mengambil semua isi tabel siswa
@@ -46,9 +44,7 @@ class SiswaController extends Controller
         return redirect()->back(); 
     }
 
-    // ==========================================
     // READ SPESIFIK (Menampilkan 1 data siswa berdasarkan NIS)
-    // ==========================================
     public function show($nis)
     {
         // Cari siswa berdasarkan NIS, kalau tidak ada otomatis error 404
@@ -56,29 +52,26 @@ class SiswaController extends Controller
         return response()->json($siswa);
     }
 
-    // ==========================================
     // UPDATE (Mengubah data siswa)
-    // ==========================================
     public function update(Request $request, $nis)
     {
-        // 1. Cari dulu data siswanya ada atau tidak
-        $siswa = Siswa::findOrFail($nis);
+        // Validasi tanpa ngecek unique NIS, karena NIS biasanya jadi acuan utama dan gak diubah
+        $request->validate([
+            'nama' => 'required|string|max:50',
+            'alamat' => 'required|string|max:100',
+        ]);
 
-        // 2. Update data siswanya dengan data baru dari inputan
+        $siswa = Siswa::findOrFail($nis);
         $siswa->update([
             'nama' => $request->nama,
             'alamat' => $request->alamat,
         ]);
 
-        return response()->json([
-            'pesan' => 'Data Siswa berhasil diubah',
-            'data' => $siswa
-        ]);
+        // Kembalikan ke halaman semula tanpa reload
+        return redirect()->back();
     }
 
-    // ==========================================
     // DELETE (Menghapus data siswa)
-    // ==========================================
     public function destroy($nis)
     {
         // 1. Cari data siswanya
