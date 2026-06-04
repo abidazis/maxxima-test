@@ -1,36 +1,32 @@
 <?php
-
 namespace App\Http\Controllers;
-
 use App\Models\MataPelajaran;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class MataPelajaranController extends Controller
 {
-    // READ: Tampilkan semua matpel
+    // READ: Tampilkan semua mata pelajaran
     public function index() {
-        return response()->json(MataPelajaran::all());
+        return Inertia::render('DataMatpel', ['dataMatpel' => MataPelajaran::all()]);
     }
 
-    // CREATE: Simpan matpel baru
+    // CREATE: Simpan mata pelajaran baru
     public function store(Request $request) {
         $request->validate(['nama_matpel' => 'required|string|max:50']);
-        
-        $matpel = MataPelajaran::create(['nama_matpel' => $request->nama_matpel]);
-        return response()->json(['pesan' => 'Matpel tersimpan!', 'data' => $matpel]);
+        MataPelajaran::create($request->all());
+        return redirect()->back();
     }
 
-    // UPDATE: Edit matpel
-    public function update(Request $request, $id) {
-        $matpel = MataPelajaran::findOrFail($id);
-        $matpel->update(['nama_matpel' => $request->nama_matpel]);
-        
-        return response()->json(['pesan' => 'Matpel diupdate!', 'data' => $matpel]);
-    }
-
-    // DELETE: Hapus matpel
+    // UPDATE: Edit mata pelajaran
     public function destroy($id) {
         MataPelajaran::findOrFail($id)->delete();
-        return response()->json(['pesan' => 'Matpel dihapus!']);
+        return redirect()->back();
+    }
+
+        // DELETE: Hapus mata pelajaran
+    public function delete($id) {
+        MataPelajaran::findOrFail($id)->delete();
+        return redirect()->back();
     }
 }

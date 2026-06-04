@@ -4,18 +4,17 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+
+// Panggil semua Controller buatan kita
 use App\Http\Controllers\SiswaController;
 use App\Http\Controllers\MataPelajaranController;
 use App\Http\Controllers\UjianController;
 use App\Http\Controllers\PesertaController;
+use App\Http\Controllers\AlgorithmController;
 
-// Route::resource akan otomatis membuatkan jalur untuk index, store, show, update, dan destroy!
-Route::resource('siswa', SiswaController::class);
-Route::resource('siswa', SiswaController::class);
-Route::resource('matpel', MataPelajaranController::class);
-Route::resource('ujian', UjianController::class);
-Route::resource('peserta', PesertaController::class);
-
+// ==========================================
+// 1. ROUTE PUBLIK (Bisa diakses tanpa Login)
+// ==========================================
 Route::get('/', function () {
     return Inertia::render('Welcome', [
         'canLogin' => Route::has('login'),
@@ -25,10 +24,38 @@ Route::get('/', function () {
     ]);
 });
 
-Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+// Jalur untuk mengecek hasil Algoritma (Soal No. 4)
+Route::get('/tes-fibonacci', [AlgorithmController::class, 'tampilFibonacci']);
+Route::get('/tes-sort', [AlgorithmController::class, 'sortManual']);
+Route::get('/tes-minmax', [AlgorithmController::class, 'cariMinMax']);
+Route::get('/tes-umur', [AlgorithmController::class, 'hitungUmur']);
 
+
+// ==========================================
+// 2. ROUTE TERPROTEKSI (Wajib Login)
+// ==========================================
+// Middleware 'auth' memastikan user akan ditendang ke halaman Login jika belum masuk
+Route::middleware(['auth', 'verified'])->group(function () {
+    
+    // Halaman Dashboard bawaan Breeze
+    Route::get('/dashboard', function () {
+        return Inertia::render('Dashboard');
+    })->name('dashboard');
+
+    // Route untuk menampilkan halaman Frontend Vue Laporan Kelulusan (Soal No. 3)
+    Route::get('/laporan-kelulusan', [PesertaController::class, 'laporanKelulusan'])->name('laporan.kelulusan');
+
+    // Kumpulan API CRUD (Soal No. 1 & 2)
+    Route::resource('siswa', SiswaController::class);
+    Route::resource('matpel', MataPelajaranController::class);
+    Route::resource('ujian', UjianController::class);
+    Route::resource('peserta', PesertaController::class);
+});
+
+
+// ==========================================
+// 3. ROUTE PROFILE BAWAAN BREEZE
+// ==========================================
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');

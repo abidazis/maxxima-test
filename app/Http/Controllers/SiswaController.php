@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Siswa;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class SiswaController extends Controller
 {
@@ -13,36 +14,36 @@ class SiswaController extends Controller
     public function index()
     {
         $siswa = Siswa::all(); // Mengambil semua isi tabel siswa
-        // Jika pakai API/Vue, kita kembalikan data dalam bentuk JSON
-        return response()->json([
-            'pesan' => 'Data Siswa Berhasil Diambil',
-            'data' => $siswa
+        
+        // HAPUS KODE INI (yang menyebabkan error JSON):
+        // return response()->json([
+        //     'pesan' => 'Data Siswa Berhasil Diambil',
+        //     'data' => $siswa
+        // ]);
+
+        // GANTI DENGAN KODE INI (Untuk merender tampilan Vue 'DataSiswa'):
+        return Inertia::render('DataSiswa', [
+            'dataSiswa' => $siswa
         ]);
     }
 
-    // ==========================================
     // CREATE (Menyimpan data siswa baru ke database)
-    // ==========================================
     public function store(Request $request)
     {
-        // 1. Validasi inputan dari user (jangan sampai kosong)
         $request->validate([
-            'nis' => 'required|unique:siswas,nis', // NIS tidak boleh sama
+            'nis' => 'required|unique:siswas,nis',
             'nama' => 'required|string|max:50',
             'alamat' => 'required|string|max:100',
         ]);
 
-        // 2. Simpan ke database
-        $siswa = Siswa::create([
+        Siswa::create([
             'nis' => $request->nis,
             'nama' => $request->nama,
             'alamat' => $request->alamat,
         ]);
 
-        return response()->json([
-            'pesan' => 'Siswa berhasil ditambahkan',
-            'data' => $siswa
-        ]);
+        // GANTI BAGIAN RETURN JSON MENJADI INI:
+        return redirect()->back(); 
     }
 
     // ==========================================
@@ -86,8 +87,6 @@ class SiswaController extends Controller
         // 2. Eksekusi hapus dari database
         $siswa->delete();
 
-        return response()->json([
-            'pesan' => 'Data Siswa berhasil dihapus'
-        ]);
+        return redirect()->back()->with('pesan', 'Data Siswa berhasil dihapus');
     }
 }
